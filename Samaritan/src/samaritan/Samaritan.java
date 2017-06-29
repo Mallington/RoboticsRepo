@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package samaritan;
-
+import periscope.Periscope;
 /**
  *
  * @author 160165
@@ -20,6 +20,7 @@ public class Samaritan {
         //ytest
         //testtt
         //A CHANGE
+        Periscope p = new Periscope();
     }
     
 }
