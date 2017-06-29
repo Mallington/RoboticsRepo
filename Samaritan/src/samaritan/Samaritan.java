@@ -15,11 +15,7 @@ public class Samaritan {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        //dev
-        //ytest
-        //testtt
-        //A CHANGE
+        
         Periscope p = new Periscope();
         Periscope.main();
     }
