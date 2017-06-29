@@ -10,8 +10,8 @@ package Periscope;
  * @author 160165
  */
 public class Periscope {
-    public static void main() {
-        System.out.println("hi");
+    public void main() {
+        System.out.println("periscope main");
 
     }
 }
