@@ -21,6 +21,7 @@ public class Samaritan {
         //testtt
         //A CHANGE
         Periscope p = new Periscope();
+        Periscope.main();
     }
     
 }
