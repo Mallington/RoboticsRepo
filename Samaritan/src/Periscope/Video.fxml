@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Periscope.VideoGUIController">
+   <center>
+      <ImageView id="currentFrame" fx:id="currentFrame" fitHeight="348.0" fitWidth="591.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+   </center>
+   <bottom>
+      <Button fx:id="button" mnemonicParsing="false" onAction="#startCamera" text="Start" BorderPane.alignment="CENTER" />
+   </bottom>
+</BorderPane>

@@ -26,25 +26,28 @@ class DetectFaceDemo {
 
     // Create a face detector from the cascade file in the resources
     // directory.
-      System.out.println(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
+  
     CascadeClassifier faceDetector = new CascadeClassifier(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
     Mat image = Imgcodecs.imread(new File("src\\Periscope\\me.png").getAbsolutePath());
 
     // Detect faces in the image.
     // MatOfRect is a special container class for Rect.
-    MatOfRect faceDetections = new MatOfRect();
-    faceDetector.detectMultiScale(image, faceDetections);
+        MatOfRect faceDetections = new MatOfRect();
 
-    System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
+        faceDetector.detectMultiScale(image, faceDetections);
 
-    // Draw a bounding box around each face.
-    for (Rect rect : faceDetections.toArray()) {
-     
-       rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-    }
+        System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
+
+        // Draw a bounding box around each face.
+
+        for (Rect rect : faceDetections.toArray()) {
+
+           rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 255, 0));
+        }
 
     // Save the visualized detection.
     String filename = "faceDetection.png";
+    
     System.out.println(String.format("Writing %s", filename));
     Imgcodecs.imwrite(filename, image);
   }
