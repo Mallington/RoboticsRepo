@@ -27,7 +27,6 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 import static org.opencv.imgproc.Imgproc.rectangle;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;        
@@ -43,7 +42,8 @@ public class VideoGUIController implements Initializable {
     private Button button;
     @FXML
     private ImageView currentFrame;
-    
+    @FXML
+    private ImageView primaryFace;
     ScheduledExecutorService timer ;
     /**
      * Initializes the controller class.
@@ -53,14 +53,14 @@ public class VideoGUIController implements Initializable {
     
     @FXML
     protected void startCamera(ActionEvent event){
-             
+             CascadeClassifier faceDetector = new CascadeClassifier(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
         Runnable frameGrabber = new Runnable(){
             public void run(){
                 try{
             if(capture.isOpened()){
             Mat frame = new Mat();
             capture.read(frame);
-            CascadeClassifier faceDetector = new CascadeClassifier(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
+            
             
              MatOfRect faceDetections = new MatOfRect();
   
@@ -69,24 +69,42 @@ public class VideoGUIController implements Initializable {
     System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
 
     // Draw a bounding box around each face.
-    
+      Rect toCrop = null;
     for (Rect rect : faceDetections.toArray()) {
      
        rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 255, 0));
+       toCrop = new Rect(rect.x,rect.y,rect.width,rect.height);
     }
 
             
             
             
             //Imgproc.cvtColor(frame, frame, Imgproc.COLORMAP_RAINBOW);
+            try{
+                frame = new Mat(frame, toCrop);
+            }
+            catch(Exception e){
+                
+            }
+          
             MatOfByte buffer = new MatOfByte();
             Imgcodecs.imencode(".png", frame, buffer);
             Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
-
+ 
             Platform.runLater(new Runnable(){public void run(){
             currentFrame.setImage(img);
-            
+               primaryFace.setImage(img);
             }});
+            
+            
+    
+            
+           // frame.submat(faceDetections.toArray()[0]);
+           
+
+           
+            
+            
             
         }
                 } catch(Exception e){System.out.println("DROPPED FRAME -----------------");}
