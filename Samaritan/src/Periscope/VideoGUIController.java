@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.opencv.core.Core;
@@ -27,6 +28,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import static org.opencv.imgproc.Imgproc.rectangle;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;        
@@ -44,6 +46,10 @@ public class VideoGUIController implements Initializable {
     private ImageView currentFrame;
     @FXML
     private ImageView primaryFace;
+    @FXML
+    private CheckBox GR;
+    
+    
     ScheduledExecutorService timer ;
     /**
      * Initializes the controller class.
@@ -120,5 +126,14 @@ public class VideoGUIController implements Initializable {
        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
        capture = new VideoCapture(0);
     }    
+    
+    public void drawFilter(Mat frame){
+        if(GR.isPressed()) Imgproc.cvtColor(frame, frame, Imgcodecs.IMREAD_GRAYSCALE);
+        
+        
+        
+    }
+    
+    
     
 }
