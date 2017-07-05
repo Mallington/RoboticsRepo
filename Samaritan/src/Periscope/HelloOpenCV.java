@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package Periscope;
+
 import java.io.File;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -21,17 +22,17 @@ import org.opencv.objdetect.CascadeClassifier;
 // to "faceDetection.png".
 //
 class DetectFaceDemo {
-  public void run() {
-    System.out.println("\nRunning DetectFaceDemo");
 
-    // Create a face detector from the cascade file in the resources
-    // directory.
-  
-    CascadeClassifier faceDetector = new CascadeClassifier(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
-    Mat image = Imgcodecs.imread(new File("src\\Periscope\\me.png").getAbsolutePath());
+    public void run() {
+        System.out.println("\nRunning DetectFaceDemo");
 
-    // Detect faces in the image.
-    // MatOfRect is a special container class for Rect.
+        // Create a face detector from the cascade file in the resources
+        // directory.
+        CascadeClassifier faceDetector = new CascadeClassifier(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
+        Mat image = Imgcodecs.imread(new File("src\\Periscope\\me.png").getAbsolutePath());
+
+        // Detect faces in the image.
+        // MatOfRect is a special container class for Rect.
         MatOfRect faceDetections = new MatOfRect();
 
         faceDetector.detectMultiScale(image, faceDetections);
@@ -39,26 +40,26 @@ class DetectFaceDemo {
         System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
 
         // Draw a bounding box around each face.
-
         for (Rect rect : faceDetections.toArray()) {
 
-           rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 255, 0));
+            rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 255, 0));
         }
 
-    // Save the visualized detection.
-    String filename = "faceDetection.png";
-    
-    System.out.println(String.format("Writing %s", filename));
-    Imgcodecs.imwrite(filename, image);
-  }
+        // Save the visualized detection.
+        String filename = "faceDetection.png";
+
+        System.out.println(String.format("Writing %s", filename));
+        Imgcodecs.imwrite(filename, image);
+    }
 }
 
 public class HelloOpenCV {
-  public static void main(String[] args) {
-    System.out.println("Hello, OpenCV");
 
-    // Load the native library.
-    System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    new DetectFaceDemo().run();
-  }
+    public static void main(String[] args) {
+        System.out.println("Hello, OpenCV");
+
+        // Load the native library.
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        new DetectFaceDemo().run();
+    }
 }

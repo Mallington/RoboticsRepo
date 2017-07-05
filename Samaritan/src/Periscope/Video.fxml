@@ -6,17 +6,17 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="483.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Periscope.VideoGUIController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="483.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Periscope.VideoGUIController">
    <center>
       <ImageView id="currentFrame" fx:id="currentFrame" fitHeight="467.0" fitWidth="372.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
    </center>
    <left>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <CheckBox layoutX="36.0" layoutY="14.0" mnemonicParsing="false" text="Show in grayscale" />
+            <CheckBox fx:id="GR" layoutX="36.0" layoutY="14.0" mnemonicParsing="false" text="Show in grayscale" />
             <Button fx:id="button" layoutX="27.0" layoutY="396.0" mnemonicParsing="false" onAction="#startCamera" prefHeight="39.0" prefWidth="133.0" text="Start" />
-            <CheckBox layoutX="58.0" layoutY="49.0" mnemonicParsing="false" prefHeight="12.0" prefWidth="85.0" text="1-bit Colour" />
-            <ImageView fx:id="primaryFace" fitHeight="121.0" fitWidth="127.0" layoutX="31.0" layoutY="242.0" pickOnBounds="true" preserveRatio="true" />
+            <CheckBox fx:id="FD" layoutX="34.0" layoutY="41.0" mnemonicParsing="false" text="Face Detection" />
+            <CheckBox fx:id="CED" layoutX="34.0" layoutY="66.0" mnemonicParsing="false" text="Canny Edge Detector" />
          </children>
       </AnchorPane>
    </left>

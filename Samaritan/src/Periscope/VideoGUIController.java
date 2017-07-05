@@ -31,7 +31,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import static org.opencv.imgproc.Imgproc.rectangle;
 import org.opencv.objdetect.CascadeClassifier;
-import org.opencv.videoio.VideoCapture;        
+import org.opencv.videoio.VideoCapture;
 
 /**
  * FXML Controller class
@@ -45,95 +45,99 @@ public class VideoGUIController implements Initializable {
     @FXML
     private ImageView currentFrame;
     @FXML
-    private ImageView primaryFace;
-    @FXML
     private CheckBox GR;
+    @FXML
+    private CheckBox CED;
+    @FXML
+    private CheckBox FD;
     
-    
-    ScheduledExecutorService timer ;
+
+    ScheduledExecutorService timer;
     /**
      * Initializes the controller class.
      */
-    
-     VideoCapture capture ;
-    
+
+    VideoCapture capture;
+    Mat frame;
     @FXML
-    protected void startCamera(ActionEvent event){
-             CascadeClassifier faceDetector = new CascadeClassifier(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
-        Runnable frameGrabber = new Runnable(){
-            public void run(){
-                try{
-            if(capture.isOpened()){
-            Mat frame = new Mat();
-            capture.read(frame);
-            
-            
-             MatOfRect faceDetections = new MatOfRect();
-  
-    faceDetector.detectMultiScale(frame, faceDetections);
+    protected void startCamera(ActionEvent event) {
+        CascadeClassifier faceDetector = new CascadeClassifier(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
+        Runnable frameGrabber = new Runnable() {
+            public void run() {
+                try {
+                    if (capture.isOpened()) {
+                        frame = new Mat();
+                        capture.read(frame);
+                        frame =drawFilter(frame,faceDetector);
 
-    System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
+                        
+                        MatOfByte buffer = new MatOfByte();
+        Imgcodecs.imencode(".png", frame, buffer);
+        Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
+                       
 
-    // Draw a bounding box around each face.
-      Rect toCrop = null;
-    for (Rect rect : faceDetections.toArray()) {
-     
-       rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 255, 0));
-       toCrop = new Rect(rect.x,rect.y,rect.width,rect.height);
-    }
+                        Platform.runLater(new Runnable() {
+                            public void run() {
+                                currentFrame.setImage(img);
+                               
+                            }
+                        });
 
-            
-            
-            
-            //Imgproc.cvtColor(frame, frame, Imgproc.COLORMAP_RAINBOW);
-            try{
-                frame = new Mat(frame, toCrop);
-            }
-            catch(Exception e){
-                
-            }
-          
-            MatOfByte buffer = new MatOfByte();
-            Imgcodecs.imencode(".png", frame, buffer);
-            Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
- 
-            Platform.runLater(new Runnable(){public void run(){
-            currentFrame.setImage(img);
-               primaryFace.setImage(img);
-            }});
-            
-            
-    
-            
-           // frame.submat(faceDetections.toArray()[0]);
-           
-
-           
-            
-            
-            
-        }
-                } catch(Exception e){System.out.println("DROPPED FRAME -----------------");}
+                        // frame.submat(faceDetections.toArray()[0]);
+                    }
+                } catch (Exception e) {
+                    System.out.println("DROPPED FRAME -----------------");
+                }
             }
         };
-        this.timer =  Executors.newSingleThreadScheduledExecutor();  
+        this.timer = Executors.newSingleThreadScheduledExecutor();
         this.timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
-        
-        
+
     }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-       System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-       capture = new VideoCapture(0);
-    }    
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        capture = new VideoCapture(0);
+    }
+
     
-    public void drawFilter(Mat frame){
-        if(GR.isPressed()) Imgproc.cvtColor(frame, frame, Imgcodecs.IMREAD_GRAYSCALE);
-        
-        
-        
+    public Image renderFrame(Mat frame){
+        MatOfByte buffer = new MatOfByte();
+        Imgcodecs.imencode(".png", frame, buffer);
+        Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
+        return img;
     }
     
     
+    public Mat cropToFace( Mat frame,CascadeClassifier faceDetector){
+         MatOfRect faceDetections = new MatOfRect();
+
+                        faceDetector.detectMultiScale(frame, faceDetections);
+
+                        System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
+
+                        //Imgproc.cvtColor(frame, frame, Imgproc.COLORMAP_RAINBOW);
+                        Rect toCrop = null;
+                        for (Rect rect : faceDetections.toArray()) {
+
+                            rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 255, 0));
+                            toCrop = new Rect(rect.x, rect.y, rect.width, rect.height);
+                        }
+
+                        try {
+                            frame = new Mat(frame, toCrop);
+                        } catch (Exception e) {
+
+                        }
+                        return frame;
+    }
     
+    public Mat drawFilter(Mat frame,CascadeClassifier faceDetector ) {
+        if (GR.isSelected()) Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
+        if(FD.isSelected()) frame =cropToFace( frame, faceDetector);
+        
+return frame;
+    }
+
 }
