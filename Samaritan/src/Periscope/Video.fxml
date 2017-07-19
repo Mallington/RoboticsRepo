@@ -22,7 +22,7 @@
             <AnchorPane fx:id="cannyTools" layoutX="1.0" layoutY="142.0" prefHeight="200.0" prefWidth="200.0">
                <children>
                   <Text layoutX="68.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Canny Tools" />
-                  <Slider fx:id="threshold" layoutX="14.0" layoutY="43.0" max="300.0" value="240.0" />
+                  <Slider fx:id="threshold" layoutX="14.0" layoutY="43.0" max="240.0" min="150.0" value="170.0" />
                   <Text layoutX="14.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Canny Threshold" />
                   <Slider fx:id="max" blockIncrement="1.0" layoutX="14.0" layoutY="131.0" max="50.0" value="6.0" />
                   <Text layoutX="14.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Shape Threshold" />
