@@ -5,7 +5,9 @@
  */
 package Periscope;
 
+import AI.Samaritan;
 import RMath.*;
+import System.Records.Marker;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,6 +22,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Camera;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
@@ -42,6 +45,7 @@ import org.opencv.imgproc.Imgproc;
 import static org.opencv.imgproc.Imgproc.rectangle;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 
 /**
  * FXML Controller class
@@ -60,21 +64,25 @@ public class VideoGUIController implements Initializable {
     private CheckBox CED;
     @FXML
     private CheckBox FD;
-     @FXML
+    @FXML
     private AnchorPane cannyTools;
-      @FXML
+    @FXML
     private Slider threshold;
-      @FXML
-     private Slider min;
-        @FXML
-    private Slider max;
+    @FXML
+    private Slider aper;
+    
     ScheduledExecutorService timer;
+    
+    
+    Samaritan samaritanAI;
+    
     /**
      * Initializes the controller class.
      */
 
     VideoCapture capture;
     Mat frame;
+
     @FXML
     protected void startCamera(ActionEvent event) {
         CascadeClassifier faceDetector = new CascadeClassifier(new File("src\\Periscope\\lbpcascade_frontalface.xml").getAbsolutePath());
@@ -82,21 +90,24 @@ public class VideoGUIController implements Initializable {
             public void run() {
                 try {
                     setWindowConfig();
+                  
                     if (capture.isOpened()) {
+                    //    int toSet = Videoio.CAP_PROP_EXPOSURE;
+       //  System.out.println("Before, BExp: "+capture.get(toSet));
+                       // ajustWebcam();
                         frame = new Mat();
                         capture.read(frame);
-                        frame =drawFilter(frame,faceDetector);
+                        frame = drawFilter(frame, faceDetector);
 
-                        
                         MatOfByte buffer = new MatOfByte();
-        Imgcodecs.imencode(".png", frame, buffer);
-        Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
-                        System.out.println(threshold.getValue());
+                        Imgcodecs.imencode(".png", frame, buffer);
+                        Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
+                       // System.out.println(threshold.getValue());
 
                         Platform.runLater(new Runnable() {
                             public void run() {
                                 currentFrame.setImage(img);
-                               
+
                             }
                         });
 
@@ -108,132 +119,65 @@ public class VideoGUIController implements Initializable {
             }
         };
         this.timer = Executors.newSingleThreadScheduledExecutor();
-        this.timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
+        this.timer.scheduleAtFixedRate(frameGrabber, 0, 50, TimeUnit.MILLISECONDS);
+       // timer.sc
 
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+
+          // try{  System.loadLibrary("C:\\Users\\malli\\OneDrive\\Documents\\RoboticsRepo\\Samaritan\\OpenCV\\opencv\\build\\bin\\opencv_ffmpeg320_64.dll"); } catch(Exception e){System.out.println(e.getCause().getMessage());}
         capture = new VideoCapture(0);
+        samaritanAI = new Samaritan();
+        //int toSet = Videoio.CAP_PROP_EXPOSURE;
+        // System.out.println("Before, BExp: "+capture.get(toSet));
+      
+       
+       // capture.open("Marker.mp4");
+      // if(!capture.open("C:\\Users\\malli\\OneDrive\\Documents\\RoboticsRepo\\Samaritan\\src\\Periscope\\Marker.mp4"))System.out.println("File Open failed");
+      
     }
 
-    
-    public Image renderFrame(Mat frame){
+    public Image renderFrame(Mat frame) {
         MatOfByte buffer = new MatOfByte();
         Imgcodecs.imencode(".png", frame, buffer);
         Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
         return img;
     }
+
     
+    public void ajustWebcam(){
+      
+        
+        int toSet = Videoio.CAP_PROP_EXPOSURE;
+        capture.set(toSet,aper.getValue());
+        System.out.println("Exp: "+capture.get(toSet));
+        
+    }
     
-   
-    
-    public Mat drawFilter(Mat frame,CascadeClassifier faceDetector ) {
+    public Mat drawFilter(Mat frame, CascadeClassifier faceDetector) {
         Mat orig = frame;
-        if (GR.isSelected()) Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
-        if(FD.isSelected()) frame =RProcess.cropToFace( frame, faceDetector);
-        if(CED.isSelected()){
-            frame = RProcess.drawCanny(frame,this.threshold.getValue());
-            orig= detectShape(frame,orig);
+        if (GR.isSelected()) {
+            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
         }
-return orig;
-    }
-    
-   
-    
-    public  Mat detectShape(Mat edges,Mat orig){
-        Mat out = new Mat();
-        
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(edges, contours, out, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-       
-      
-         Imgproc.cvtColor(edges, edges, Imgproc.COLOR_GRAY2BGR);
-        for(int i=0; i<contours.size(); i++){
-              MatOfPoint cont = contours.get(i);
-            MatOfPoint2f matOfPoint2f = new MatOfPoint2f();
-            MatOfPoint2f approxCurve = new MatOfPoint2f();
-            matOfPoint2f.fromList(cont.toList());
-              Imgproc.approxPolyDP(matOfPoint2f, approxCurve, Imgproc.arcLength(matOfPoint2f, true) * 0.02, true);
-              Rect rect = Imgproc.boundingRect(cont);  
-              long total = approxCurve.total();
-            
-              
-            
-              
-              
-               if(total==4){
-                   
-                   
-                  
-                   
-                  // Imgproc.putT
-                  /*
-                   int z =0;
-                   Point l= matOfPoint2f.toList().get(0);
-                            for(Point p: matOfPoint2f.toList()){
-                                
-                             //   System.out.println(p.x+", "+p.y);
-                                Imgproc.line(orig, l, p, new Scalar(255,0,0),2);
-                               
-                                        l=p;
-                                z++;
-               }*/
-                          
-                             Point la = approxCurve.toList().get(0);
-                     for(Point p: approxCurve.toList()){
-                          Imgproc.line(orig, la, p, new Scalar(255,125,60),2);
-                          la =p;
-                     }     
-                            
-                            List<Point> outerPoints = RProcess.findOuter(new MatOfPoint(approxCurve.toArray()));
-                            int k =0;
-                            for(Point p : outerPoints)  {
-                                Imgproc.circle(orig,p, 5, new Scalar(255,255,0));
-                                Imgproc.putText(orig, ""+k, p, Core.FONT_HERSHEY_PLAIN,5, new Scalar(0, 0, 255));
-                                k++;
-                            }
-                            
-                            orig = drawCircleGrid(orig,outerPoints, 10,10);
-                            
-                          
-                            /*
-                    Imgproc.putText(orig, "Sq Obj Det", new Point(rect.x, rect.y), Core.FONT_HERSHEY_PLAIN,1, new Scalar(0, 0, 255));
-                    rectangle(orig, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255));*/
-                   
-               }
-               else{
-                    rectangle(edges, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-               }
-          
-       
-       
+        if (FD.isSelected()) {
+            frame = RProcess.cropToFace(frame, faceDetector);
         }
-      
-      
-       
-      
-      
-        
-     return orig;   
+        if (CED.isSelected()) {
+            frame = RProcess.drawCanny(frame, this.threshold.getValue());
+            List<Marker> markers = RProcess. getMarkers(frame,orig);
+            samaritanAI.updateMarkers(markers);
+        }
+        return orig;
     }
+
    
-   
-    public Mat drawCircleGrid(Mat frame,List<Point> corners, int height, int width){
-    RGrid grid = RGrid.findGridCoor(corners,height ,width);
-  
-    
-    for(Point c: grid.getList() ) Imgproc.circle(frame,c, 7, new Scalar(200, 0, 125));
-     if( RProcess.isBlack(frame, grid.getPoint(2, 2)))Imgproc.circle(frame,grid.getPoint(2, 2), 7, new Scalar(0, 0, 0));
-        return frame;
-    }
-    
-    public void setWindowConfig(){
+
+    public void setWindowConfig() {
         cannyTools.setVisible(CED.isSelected());
         
     }
-    
-    
 
 }
