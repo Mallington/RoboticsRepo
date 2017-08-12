@@ -15,4 +15,14 @@ public class MotorController {
         
         
     }
+    public void halt(){
+        
+    }
+    public void start(){
+        
+    }
+    public void setMotor(int motNum, int motorPower){
+        
+    }
+    
 }
