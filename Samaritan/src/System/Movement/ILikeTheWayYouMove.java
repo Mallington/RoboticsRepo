@@ -7,4 +7,5 @@ public class ILikeTheWayYouMove {
     public ILikeTheWayYouMove(){
 
     }
+    public void move(int )
 }
