@@ -18,8 +18,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 public class MotorController {
-    public MotorController() throws IOException, InterruptedException{
+
+    public MotorController() throws IOException, InterruptedException {
         /*
         SerialPort[] serialArray = SerialPort.getCommPorts();
         
@@ -34,49 +36,49 @@ public class MotorController {
           System.out.print((char)r.read());
       }
       }*/
-        
+
         SerialPort[] serialArray = SerialPort.getCommPorts();
-        int i =0;
-         for(SerialPort p: serialArray) System.out.println(p.getDescriptivePortName()+" == "+p.getSystemPortName()+" port: "+(i++));
-         int port = 5;
-         serialArray[port].openPort();
-         OutputStream out = serialArray[port].getOutputStream();
-         
-         
-         
-         
-         BufferedOutputStream outs = new BufferedOutputStream(out);
+        int i = 0;
+        for (SerialPort p : serialArray) {
+            System.out.println(p.getDescriptivePortName() + " == " + p.getSystemPortName() + " port: " + (i++));
+        }
+        int port = 5;
+        serialArray[port].openPort();
+        OutputStream out = serialArray[port].getOutputStream();
+
+        BufferedOutputStream outs = new BufferedOutputStream(out);
         Thread.sleep(5000);
-         outs.write(49);
-         outs.write(55);
-         outs.flush();
-         outs.close();
-         BufferedInputStream sin = new BufferedInputStream(serialArray[port].getInputStream());
-         
-         while(true){
-             while(sin.available()>0){
-                 System.out.print((char)sin.read());
-             }
-         }
-         
-         
-         
-    }
-    public void halt(){
+        outs.write(49);
+        outs.write(55);
+        outs.flush();
         
+        outs.close();
+        BufferedInputStream sin = new BufferedInputStream(serialArray[port].getInputStream());
+
+        while (true) {
+            while (sin.available() > 0) {
+                System.out.print((char) sin.read());
+            }
+        }
+
     }
-    public void start(){
-        
+
+    public void halt() {
+
     }
-    public void setMotor(int motNum, int motorPower){
+
+    public void start() {
+
+    }
+
+    public void setMotor(int motNum, int motorPower) {
         List<Integer> params = new ArrayList<Integer>();
         params.add(motNum);
-        
+
     }
-    
-    
-    public static void main(String args[]) throws IOException, InterruptedException{
+
+    public static void main(String args[]) throws IOException, InterruptedException {
         MotorController m = new MotorController();
     }
-    
+
 }
