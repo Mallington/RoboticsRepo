@@ -16,7 +16,7 @@ import com.fazecast.jSerialComm.*;
 public class Arduino {
 
     public Arduino(int port) {
-
+        System.out.println("Initialises ");
     }
 
     public static int getPortValue(String descriptor) {
@@ -27,7 +27,7 @@ public class Arduino {
             }
         }
 
-        return 0;
+        return -1;
     }
 
     public static List<Port> listPorts() {
@@ -49,7 +49,7 @@ public class Arduino {
         }
 
         Arduino a = new Arduino(Arduino.getPortValue("cu.usbmodem1421"));
-
+       
     }
 
     public static class Port {
