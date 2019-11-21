@@ -1,2 +1,2 @@
 # RoboticsRepo
-Any libraries and code, put them in here!
+Created for a robotics competition. The project was eventually abandoned due to the competition being cancelled.
